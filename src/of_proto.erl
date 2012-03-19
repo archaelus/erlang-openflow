@@ -39,28 +39,31 @@
 
 -define(OFPAT_OUTPUT, 0).
 
--type of_message() :: #ofp_hello{} | #ofp_echo_request{} | #ofp_echo_reply{} |
-                      #ofp_packet_in{} | #ofp_packet_out{} | #ofp_flow_mod{}.
+-type of_msg() :: #ofp_hello{} | #ofp_echo_request{} | #ofp_echo_reply{} |
+                  #ofp_packet_in{} | #ofp_packet_out{} | #ofp_flow_mod{}.
+
+-export_type([of_msg/0]).
 
 -spec decode(Version :: integer(), Type :: integer(), Xid :: integer(),
-             Message :: binary()) -> of_message() | {error, Reason::term()}.
+             Message :: binary()) -> {ok, of_msg()} |
+                                     {error, Reason::term()}.
 %% @doc Decodes a message.
 decode(?OFP_VERSION, ?OFPT_HELLO, _Xid, <<>>) ->
-    #ofp_hello{};
+    {ok, #ofp_hello{}};
 decode(?OFP_VERSION, ?OFPT_ECHO_REQUEST, Xid, Payload) ->
-    #ofp_echo_request{xid=Xid, payload=Payload};
+    {ok, #ofp_echo_request{xid=Xid, payload=Payload}};
 decode(?OFP_VERSION, ?OFPT_FEATURES_REPLY, Xid, Payload) ->
     <<Dpid:64, _/binary>> = Payload,
-    #ofp_features_reply{xid=Xid, dpid=Dpid};
+    {ok, #ofp_features_reply{xid=Xid, dpid=Dpid}};
 decode(?OFP_VERSION, ?OFPT_PACKET_IN, Xid, Payload) ->
     <<BufferId:32, TotalLen:16, InPort:16,
       Reason, _Pad, Data/binary>> = Payload,
-    #ofp_packet_in{xid=Xid, buffer_id=BufferId, total_len=TotalLen,
-                   in_port=InPort, reason=Reason, data=Data};
+    {ok, #ofp_packet_in{xid=Xid, buffer_id=BufferId, total_len=TotalLen,
+                        in_port=InPort, reason=Reason, data=Data}};
 decode(?OFP_VERSION, Type, _Xid, _Payload) ->
     {errror, {unimplemented_type, Type}}.
 
--spec encode(Message :: of_message()) -> binary().
+-spec encode(Message :: of_msg()) -> binary().
 %% @doc Encodes a message.
 encode(#ofp_hello{}) ->
     <<?OFP_VERSION, ?OFPT_HELLO, 8:16, 0:32>>;
