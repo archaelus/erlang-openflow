@@ -1,4 +1,5 @@
 %% Copyright (c) 2012 Renato Aguiar <renato@aguiar.info>
+%% Copyright (c) 2012 Geoff Cant <nem@erlang.geek.nz>
 %%
 %% Permission is hereby granted, free of charge, to any person obtaining a
 %% copy of this software and associated documentation files (the "Software"),
