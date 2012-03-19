@@ -43,7 +43,7 @@
                       #ofp_packet_in{} | #ofp_packet_out{} | #ofp_flow_mod{}.
 
 -spec decode(Version :: integer(), Type :: integer(), Xid :: integer(),
-             Message :: binary()) -> of_message() | error.
+             Message :: binary()) -> of_message() | {error, Reason::term()}.
 %% @doc Decodes a message.
 decode(?OFP_VERSION, ?OFPT_HELLO, _Xid, <<>>) ->
     #ofp_hello{};
@@ -58,8 +58,7 @@ decode(?OFP_VERSION, ?OFPT_PACKET_IN, Xid, Payload) ->
     #ofp_packet_in{xid=Xid, buffer_id=BufferId, total_len=TotalLen,
                    in_port=InPort, reason=Reason, data=Data};
 decode(?OFP_VERSION, Type, _Xid, _Payload) ->
-    io:format("Can't handle message type ~B~n", [Type]),
-    error.
+    {errror, {unimplemented_type, Type}}.
 
 -spec encode(Message :: of_message()) -> binary().
 %% @doc Encodes a message.
