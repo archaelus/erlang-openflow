@@ -53,7 +53,7 @@ parse(Buf = #buf{data = << Exp:1, Version:7, Type, Length:16/unsigned,
     PktLen = Length - ?MIN_PKT_SIZE,
     case byte_size(Rest) of
         N when N >= PktLen ->
-            <<Pkt:PktLen, Tail/binary>> = Rest,
+            <<Pkt:PktLen/binary, Tail/binary>> = Rest,
             case parse_pkt(Exp, Version, Type, XID, Pkt) of
                 {ok, Msg} ->
                     parse(Buf#buf{data = Tail}, [Msg | Acc]);
