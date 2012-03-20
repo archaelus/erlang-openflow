@@ -52,7 +52,7 @@ parse(Buf = #buf{data = << Exp:1, Version:7, Type, Length:16/unsigned,
       Acc) ->
     PktLen = Length - ?MIN_PKT_SIZE,
     case byte_size(Rest) of
-        N when N > PktLen ->
+        N when N >= PktLen ->
             <<Pkt:PktLen, Tail/binary>> = Rest,
             case parse_pkt(Exp, Version, Type, XID, Pkt) of
                 {ok, Msg} ->
@@ -60,7 +60,7 @@ parse(Buf = #buf{data = << Exp:1, Version:7, Type, Length:16/unsigned,
                 {error,_} = Err ->
                     {Err, Acc, Buf#buf{data = Tail}}
             end;
-        N when N =< PktLen ->
+        N when N < PktLen ->
             {{incomplete, PktLen - N}, Acc, Buf}
     end.
 
