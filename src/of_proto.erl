@@ -61,7 +61,7 @@ decode(?OFP_VERSION, ?OFPT_PACKET_IN, Xid, Payload) ->
     {ok, #ofp_packet_in{xid=Xid, buffer_id=BufferId, total_len=TotalLen,
                         in_port=InPort, reason=Reason, data=Data}};
 decode(?OFP_VERSION, Type, _Xid, _Payload) ->
-    {errror, {unimplemented_type, Type}}.
+    {error, {unimplemented_type, Type}}.
 
 -spec encode(Message :: of_msg()) -> binary().
 %% @doc Encodes a message.
